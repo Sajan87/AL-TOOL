@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Tools Hub - All in One AI Tools Website</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background: #f0f4f8;
+    color: #222;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #4a90e2;
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    user-select: none;
+    box-shadow: 0 4px 14px rgba(74, 144, 226, 0.5);
+  }
+  main {
+    flex-grow: 1;
+    max-width: 1080px;
+    margin: 20px auto 40px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    padding: 20px 30px;
+  }
+  .tabs {
+    display: flex;
+    border-bottom: 3px solid #e1e8f4;
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+  .tab {
+    flex: 1 0 auto;
+    text-align: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 3px solid transparent;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .tab:hover {
+    color: #4a90e2;
+  }
+  .tab.active {
+    color: #4a90e2;
+    border-bottom-color: #4a90e2;
+    font-weight: 700;
+  }
+  section.tool-section {
+    display: none;
+  }
+  section.tool-section.active {
+    display: block;
+  }
+  h2.tool-title {
+    font-weight: 700;
+    color: #4a90e2;
+    margin-bottom: 15px;
+  }
+  textarea, input[type="text"] {
+    width: 100%;
+    font-size: 1rem;
+    padding: 12px 14px;
+    border: 2px solid #d0d7e5;
+    border-radius: 10px;
+    resize: vertical;
+    transition: border-color 0.3s;
+    font-family: inherit;
+    margin-bottom: 20px;
+  }
+  textarea:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 8px rgba(74,144,226,0.4);
+  }
+  button {
+    background: #4a90e2;
+    border: none;
+    color: white;
+    border-radius: 14px;
+    padding: 12px 28px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+    user-select: none;
+  }
+  button:disabled {
+    background: #a0b9e9;
+    cursor: not-allowed;
+  }
+  button:hover:not(:disabled),
+  button:focus:not(:disabled) {
+    background: #3a78c2;
+    box-shadow: 0 6px 18px rgba(58,120,194,0.7);
+    outline: none;
+  }
+  .output-box {
+    background-color: #f9fbff;
+    border: 2px solid #d0d7e5;
+    border-radius: 10px;
+    padding: 15px 18px;
+    min-height: 80px;
+    white-space: pre-wrap;
+    font-family: 'Courier New', Courier, monospace;
+    color: #222;
+    margin-top: 10px;
+    user-select: text;
+  }
+  .output-box.error {
+    background-color: #ffe5e5;
+    border-color: #ff4d4d;
+    color: #900;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #333;
+  }
+  .tts-controls {
+    margin-top: 15px;
+  }
+  .tts-controls button {
+    margin-right: 12px;
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    main {
+      margin: 15px 10px 30px;
+      padding: 15px 20px;
+    }
+    .tab {
+      padding: 10px 12px;
+      font-size: 0.95rem;
+    }
+  }
+</style>
+</head>
+<body>
+<header>AI Tools Hub - Explore Powerful AI Utilities</header>
+<main>
+  <nav class="tabs" role="tablist" aria-label="AI Tools Navigation">
+    <div class="tab active" role="tab" tabindex="0" aria-selected="true" aria-controls="summarizer" id="tab-summarizer">Text Summarizer</div>
+    <div class="tab" role="tab" tabindex="-1" aria-selected="false" aria-controls="sentiment" id="tab-sentiment">Sentiment Analyzer</div>
+    <div class="tab" role="tab" tabindex="-1" aria-selected="false" aria-controls="chatbot" id="tab-chatbot">Chatbot</div>
+    <div class="tab" role="tab" tabindex="-1" aria-selected="false" aria-controls="tts" id="tab-tts">Text to Speech</div>
+    <div class="tab" role="tab" tabindex="-1" aria-selected="false" aria-controls="codegen" id="tab-codegen">Code Snippet Generator</div>
+    <div class="tab" role="tab" tabindex="-1" aria-selected="false" aria-controls="imggen" id="tab-imggen">Image Generator (UI Only)</div>
+  </nav>
+  
+  <!-- Text Summarizer -->
+  <section id="summarizer" class="tool-section active" role="tabpanel" aria-labelledby="tab-summarizer">
+    <h2 class="tool-title">Text Summarizer</h2>
+    <label for="summarizeInput">Enter Text to Summarize:</label>
+    <textarea id="summarizeInput" rows="6" placeholder="Paste or type text here..."></textarea>
+    <button id="summarizeBtn" aria-label="Generate summary from the entered text">Summarize</button>
+    <div id="summarizeOutput" class="output-box" aria-live="polite" aria-atomic="true"></div>
+  </section>
+
+  <!-- Sentiment Analyzer -->
+  <section id="sentiment" class="tool-section" role="tabpanel" aria-labelledby="tab-sentiment">
+    <h2 class="tool-title">Sentiment Analyzer</h2>
+    <label for="sentimentInput">Enter Text to Analyze Sentiment:</label>
+    <textarea id="sentimentInput" rows="5" placeholder="Type a sentence or paragraph..."></textarea>
+    <button id="sentimentBtn" aria-label="Analyze sentiment of the entered text">Analyze Sentiment</button>
+    <div id="sentimentOutput" class="output-box" aria-live="polite" aria-atomic="true"></div>
+  </section>
+
+  <!-- Chatbot -->
+  <section id="chatbot" class="tool-section" role="tabpanel" aria-labelledby="tab-chatbot">
+    <h2 class="tool-title">AI Chatbot</h2>
+    <div id="chatWindow" style="height: 300px; overflow-y: auto; background: #f9fbff; border: 2px solid #d0d7e5; border-radius: 10px; padding: 10px; margin-bottom: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+      <!-- Chat messages -->
+    </div>
+    <input type="text" id="chatInput" placeholder="Type your message..." aria-label="Chat input" autocomplete="off" />
+    <button id="chatSendBtn" aria-label="Send message to chatbot">Send</button>
+  </section>
+
+  <!-- Text to Speech -->
+  <section id="tts" class="tool-section" role="tabpanel" aria-labelledby="tab-tts">
+    <h2 class="tool-title">Text to Speech</h2>
+    <label for="ttsInput">Enter Text to Convert to Speech:</label>
+    <textarea id="ttsInput" rows="4" placeholder="Type text here..."></textarea>
+    <div class="tts-controls">
+      <button id="ttsSpeakBtn" aria-label="Speak the entered text">Speak</button>
+      <button id="ttsStopBtn" aria-label="Stop speaking" disabled>Stop</button>
+    </div>
+  </section>
+
+  <!-- Code Snippet Generator -->
+  <section id="codegen" class="tool-section" role="tabpanel" aria-labelledby="tab-codegen">
+    <h2 class="tool-title">Code Snippet Generator</h2>
+    <label for="codegenInput">Describe what code you want:</label>
+    <textarea id="codegenInput" rows="5" placeholder="E.g., a JavaScript function to sort an array"></textarea>
+    <button id="codegenBtn" aria-label="Generate code snippet from description">Generate Code</button>
+    <pre id="codegenOutput" class="output-box" aria-live="polite" aria-atomic="true"></pre>
+  </section>
+
+  <!-- Image Generator (UI Only) -->
+  <section id="imggen" class="tool-section" role="tabpanel" aria-labelledby="tab-imggen">
+    <h2 class="tool-title">Image Generator (UI Only)</h2>
+    <label for="imggenInput">Describe an image you want generated:</label>
+    <input type="text" id="imggenInput" placeholder="E.g. a futuristic city skyline at sunset" />
+    <button id="imggenBtn" aria-label="Generate placeholder image for description">Generate Image</button>
+    <div id="imggenOutput" style="margin-top:20px; text-align:center;">
+      <!-- Placeholder image here -->
+    </div>
+  </section>
+</main>
+
+<script>
+  // Tabs functionality
+  const tabs = document.querySelectorAll('.tab');
+  const sections = document.querySelectorAll('section.tool-section');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      selectTab(tab);
+    });
+    tab.addEventListener('keydown', e => {
+      if(e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        const idx = Array.from(tabs).indexOf(document.activeElement);
+        let newIdx = e.key === 'ArrowRight' ? idx + 1 : idx - 1;
+        if(newIdx < 0) newIdx = tabs.length - 1;
+        if(newIdx >= tabs.length) newIdx = 0;
+        tabs[newIdx].focus();
+        e.preventDefault();
+      }
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectTab(document.activeElement);
+      }
+    });
+  });
+  function selectTab(tab) {
+    tabs.forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+      t.setAttribute('tabindex', '-1');
+    });
+    sections.forEach(s => s.classList.remove('active'));
+    const targetId = tab.getAttribute('aria-controls');
+    const targetSection = document.getElementById(targetId);
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    tab.setAttribute('tabindex', '0');
+    targetSection.classList.add('active');
+    targetSection.focus();
+  }
+
+  // Text Summarizer logic (basic summarization by extracting first 3 sentences)
+  const summarizeBtn = document.getElementById('summarizeBtn');
+  const summarizeInput = document.getElementById('summarizeInput');
+  const summarizeOutput = document.getElementById('summarizeOutput');
+
+  summarizeBtn.addEventListener('click', () => {
+    const text = summarizeInput.value.trim();
+    if(!text) {
+      summarizeOutput.textContent = 'Please enter some text to summarize.';
+      summarizeOutput.classList.add('error');
+      return;
+    }
+    summarizeOutput.classList.remove('error');
+    const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
+    const summary = sentences.slice(0, 3).join(' ');
+    summarizeOutput.textContent = summary;
+  });
+
+  // Sentiment Analyzer - basic keyword based sentiment detection
+  const sentimentBtn = document.getElementById('sentimentBtn');
+  const sentimentInput = document.getElementById('sentimentInput');
+  const sentimentOutput = document.getElementById('sentimentOutput');
+  const positiveWords = ['good', 'happy', 'great', 'excellent', 'awesome', 'love', 'nice', 'amazing', 'wonderful', 'pleased'];
+  const negativeWords = ['bad', 'sad', 'terrible', 'awful', 'hate', 'poor', 'angry', 'upset', 'disappointed', 'worse'];
+
+  sentimentBtn.addEventListener('click', () => {
+    const text = sentimentInput.value.toLowerCase();
+    if(!text) {
+      sentimentOutput.textContent = 'Please enter some text to analyze.';
+      sentimentOutput.classList.add('error');
+      return;
+    }
+    sentimentOutput.classList.remove('error');
+    let score = 0;
+    positiveWords.forEach(word => { if(text.includes(word)) score++; });
+    negativeWords.forEach(word => { if(text.includes(word)) score--; });
+    let sentiment = 'Neutral';
+    if(score > 0) sentiment = 'Positive 😊';
+    else if(score < 0) sentiment = 'Negative 😞';
+    sentimentOutput.textContent = `Sentiment: ${sentiment}`;
+  });
+
+  // Chatbot - simple echo and keyword based mock bot
+  const chatWindow = document.getElementById('chatWindow');
+  const chatInput = document.getElementById('chatInput');
+  const chatSendBtn = document.getElementById('chatSendBtn');
+
+  function appendChatMessage(msg, fromUser = true) {
+    const msgEl = document.createElement('div');
+    msgEl.style.marginBottom = '10px';
+    msgEl.style.maxWidth = '80%';
+    msgEl.style.padding = '8px 12px';
+    msgEl.style.borderRadius = '12px';
+    if(fromUser) {
+      msgEl.style.alignSelf = 'flex-end';
+      msgEl.style.backgroundColor = '#4a90e2';
+      msgEl.style.color = 'white';
+      msgEl.style.textAlign = 'right';
+      msgEl.textContent = msg;
+    } else {
+      msgEl.style.backgroundColor = '#e1e8f7';
+      msgEl.style.color = '#222';
+      msgEl.style.textAlign = 'left';
+      msgEl.textContent = msg;
+    }
+    chatWindow.appendChild(msgEl);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  function botResponse(userMsg) {
+    const msg = userMsg.toLowerCase();
+    if(msg.includes('hello') || msg.includes('hi')) {
+      return 'Hello! How can I help you today?';
+    }
+    if(msg.includes('help')) {
+      return 'Sure! I can assist with summarization, sentiment analysis, text-to-speech, code snippet generation, and more.';
+    }
+    if(msg.includes('thank')) {
+      return "You're welcome! 😊";
+    }
+    if(msg.includes('bye')) {
+      return 'Goodbye! Have a great day!';
+    }
+    // Default echo
+    return "You said: " + userMsg;
+  }
+
+  chatSendBtn.addEventListener('click', () => {
+    const userMsg = chatInput.value.trim();
+    if(!userMsg) return;
+    appendChatMessage(userMsg, true);
+    chatInput.value = '';
+    setTimeout(() => {
+      const reply = botResponse(userMsg);
+      appendChatMessage(reply, false);
+    }, 600);
+  });
+  chatInput.addEventListener('keypress', e => {
+    if(e.key === 'Enter') {
+      e.preventDefault();
+      chatSendBtn.click();
+    }
+  });
+
+  // Text to Speech
+  const ttsInput = document.getElementById('ttsInput');
+  const ttsSpeakBtn = document.getElementById('ttsSpeakBtn');
+  const ttsStopBtn = document.getElementById('ttsStopBtn');
+  let synth = window.speechSynthesis;
+  let utterance = null;
+
+  ttsSpeakBtn.addEventListener('click', () => {
+    const text = ttsInput.value.trim();
+    if(!text) {
+      alert('Please enter text to speak.');
+      return;
+    }
+    if(synth.speaking) {
+      alert('Speech synthesis in progress. Please wait.');
+      return;
+    }
+    utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    synth.speak(utterance);
+    ttsSpeakBtn.disabled = true;
+    ttsStopBtn.disabled = false;
+
+    utterance.onend = () => {
+      ttsSpeakBtn.disabled = false;
+      ttsStopBtn.disabled = true;
+    };
+    utterance.onerror = () => {
+      ttsSpeakBtn.disabled = false;
+      ttsStopBtn.disabled = true;
+      alert('An error occurred during speech synthesis.');
+    };
+  });
+
+  ttsStopBtn.addEventListener('click', () => {
+    if(synth.speaking) {
+      synth.cancel();
+      ttsSpeakBtn.disabled = false;
+      ttsStopBtn.disabled = true;
+    }
+  });
+
+  // Code Snippet Generator (simulate with predefined snippets based on keywords)
+  const codegenInput = document.getElementById('codegenInput');
+  const codegenBtn = document.getElementById('codegenBtn');
+  const codegenOutput = document.getElementById('codegenOutput');
+
+  const snippets = {
+    'sort array js': `function sortArray(arr) {
+  return arr.sort((a, b) => a - b);
+}`,
+    'fetch api': `fetch('https://api.example.com/data')
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));`,
+    'hello world python': `print("Hello, World!")`,
+    'reverse string js': `function reverseString(str) {
+  return str.split('').reverse().join('');
+}`,
+    'factorial js': `function factorial(n) {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
+}`
+  };
+
+  codegenBtn.addEventListener('click', () => {
+    const desc = codegenInput.value.toLowerCase().trim();
+    if(!desc) {
+      codegenOutput.textContent = 'Please describe the code snippet you want to generate.';
+      codegenOutput.classList.add('error');
+      return;
+    }
+    codegenOutput.classList.remove('error');
+    // Try to match keywords heuristically
+    let key = '';
+    if(desc.includes('sort') && desc.includes('array') && desc.includes('js')) key = 'sort array js';
+    else if(desc.includes('fetch') && desc.includes('api')) key = 'fetch api';
+    else if(desc.includes('hello') && desc.includes('world') && desc.includes('python')) key = 'hello world python';
+    else if(desc.includes('reverse') && desc.includes('string') && desc.includes('js')) key = 'reverse string js';
+    else if(desc.includes('factorial') && desc.includes('js')) key = 'factorial js';
+
+    if(key && snippets[key]) {
+      codegenOutput.textContent = snippets[key];
+    } else {
+      codegenOutput.textContent = "// Sorry, I don't have a snippet matching your description.";
+    }
+  });
+
+  // Image Generator UI Only (no real image generation - placeholder)
+  const imggenInput = document.getElementById('imggenInput');
+  const imggenBtn = document.getElementById('imggenBtn');
+  const imggenOutput = document.getElementById('imggenOutput');
+
+  imggenBtn.addEventListener('click', () => {
+    const desc = imggenInput.value.trim();
+    if(!desc) {
+      imggenOutput.innerHTML = '<p style="color:#900; font-weight:700;">Please enter a description to generate an image.</p>';
+      return;
+    }
+    imggenOutput.innerHTML = ''; 
+    // Use Unsplash Source API for random images as placeholder
+    // Just simulating the concept - real image generation requires backend/AI API
+    const img = document.createElement('img');
+    img.alt = `Placeholder image for: ${desc}`;
+    img.style.maxWidth = '100%';
+    img.style.borderRadius = '12px';
+    img.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)';
+    // Create a random unsplash URL with keywords from description
+    const keywords = desc.split(' ').slice(0, 3).join(',');
+    img.src = `https://source.unsplash.com/featured/?${encodeURIComponent(keywords)}`;
+
+    imggenOutput.appendChild(img);
+  });
+
+</script>
+</body>
+</html>
+```
